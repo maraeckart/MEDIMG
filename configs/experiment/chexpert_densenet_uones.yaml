@@ -1,0 +1,23 @@
+
+# Full experiment: DenseNet121 + U-Ones on CheXpert
+# Maximises sensitivity (minimises false negatives for uncertain labels).
+# Run with:
+#   python src/train.py experiment=chexpert_densenet_uones
+
+defaults:
+  - chexpert_densenet_uignore           # inherit base experiment
+  - override /model: densenet121_uones  # swap model config
+  - _self_
+
+tags: ["chexpert", "densenet121", "u_ones"]
+
+data:
+  uncertainty_policy: u_ones
+
+model:
+  uncertainty_policy: u_ones
+
+logger:
+  wandb:
+    name: "densenet121-u_ones"
+    tags: ${tags}

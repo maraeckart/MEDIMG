@@ -1,0 +1,46 @@
+# Full experiment: DenseNet121 + U-Ignore on CheXpert
+# Run with:
+#   python src/train.py experiment=chexpert_densenet_uignore
+
+defaults:
+  - override /data: chexpert
+  - override /model: densenet121_uignore
+  - override /trainer: default
+  - override /logger: wandb
+  - _self_
+
+tags: ["chexpert", "densenet121", "u_ignore"]
+
+seed: 42
+
+trainer:
+  max_epochs: 30
+  accelerator: gpu
+  devices: 1
+  precision: 16-mixed          # AMP for faster training
+  gradient_clip_val: 1.0
+
+data:
+  batch_size: 32
+  uncertainty_policy: u_ignore
+  image_size: 224
+
+model:
+  uncertainty_policy: u_ignore
+
+callbacks:
+  model_checkpoint:
+    monitor: val/auroc_macro
+    mode: max
+    save_top_k: 3
+    filename: "epoch_{epoch:02d}-auroc_{val/auroc_macro:.4f}"
+  early_stopping:
+    monitor: val/auroc_macro
+    mode: max
+    patience: 7
+
+logger:
+  wandb:
+    project: "chexpert-medimg"
+    name: "densenet121-u_ignore"
+    tags: ${tags}

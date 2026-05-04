@@ -1,0 +1,5 @@
+# Sanity-check baseline: class-frequency prior
+
+_target_: src.models.baselines.RandomClassifier
+
+num_classes: 14

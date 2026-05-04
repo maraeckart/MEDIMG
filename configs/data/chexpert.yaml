@@ -1,0 +1,46 @@
+# @package _global_
+
+# configs/data/chexpert.yaml
+# Hydra config for CheXpertDataModule
+
+_target_: src.data.chexpert_datamodule.CheXpertDataModule
+
+data_dir: ${paths.data_dir}/CheXpert-v1.0-small
+
+# Uncertainty policy: u_ignore | u_ones | u_zeros
+uncertainty_policy: u_ignore
+
+# Patient-level val split (10 % of training patients)
+val_fraction: 0.10
+
+# Image size (DenseNet121 expects 224x224)
+image_size: 224
+
+batch_size: 32
+num_workers: 4
+pin_memory: true
+
+# Set to true to oversample minority classes
+use_weighted_sampler: false
+
+# Augmentation flags (set to false for ablation studies)
+aug_horizontal_flip: true
+aug_rotation: true
+aug_color_jitter: true
+
+# Use all 14 pathologies by default
+pathologies:
+  - "No Finding"
+  - "Enlarged Cardiomediastinum"
+  - "Cardiomegaly"
+  - "Lung Opacity"
+  - "Lung Lesion"
+  - "Edema"
+  - "Consolidation"
+  - "Pneumonia"
+  - "Atelectasis"
+  - "Pneumothorax"
+  - "Pleural Effusion"
+  - "Pleural Other"
+  - "Fracture"
+  - "Support Devices"

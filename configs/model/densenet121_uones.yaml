@@ -1,0 +1,11 @@
+# DenseNet121 baseline with U-Ones uncertainty policy
+
+_target_: src.models.baselines.DenseNet121Module
+
+pretrained: true
+freeze_encoder: false
+dropout: 0.0
+num_classes: 14
+learning_rate: 1e-4
+weight_decay: 1e-5
+uncertainty_policy: u_ones   # must match data.uncertainty_policy

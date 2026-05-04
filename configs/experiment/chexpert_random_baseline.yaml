@@ -1,0 +1,16 @@
+
+
+defaults:
+  - chexpert_densenet_uignore           # inherit base experiment
+  - override /model: random_baseline
+  - _self_
+
+tags: ["chexpert", "random_classifier"]
+
+trainer:
+  max_epochs: 1
+
+logger:
+  wandb:
+    name: "random-baseline"
+    tags: ${tags}
