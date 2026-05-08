@@ -1,6 +1,3 @@
-# @package _global_
-
-# configs/data/chexpert.yaml
 # Hydra config for CheXpertDataModule
 
 _target_: src.data.chexpert_datamodule.CheXpertDataModule

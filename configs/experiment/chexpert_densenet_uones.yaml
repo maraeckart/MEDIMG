@@ -1,3 +1,4 @@
+# @package _global_
 
 # Full experiment: DenseNet121 + U-Ones on CheXpert
 # Maximises sensitivity (minimises false negatives for uncertain labels).

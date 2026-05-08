@@ -1,3 +1,5 @@
+# @package _global_
+
 # Full experiment: DenseNet121 + U-Ignore on CheXpert
 # Run with:
 #   python src/train.py experiment=chexpert_densenet_uignore
