@@ -13,6 +13,17 @@ tags: ["chexpert", "random_classifier"]
 trainer:
   max_epochs: 1
 
+callbacks:
+  model_checkpoint:
+    monitor: val/auroc_macro
+    mode: max
+    save_top_k: 1
+    filename: "epoch_{epoch:02d}-auroc_{val/auroc_macro:.4f}"
+  early_stopping:
+    monitor: val/auroc_macro
+    mode: max
+    patience: 1
+
 logger:
   wandb:
     project: "chexpert-medimg"
