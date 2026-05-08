@@ -33,7 +33,7 @@ class _CheXpertBase(LightningModule):
         pathologies: list[str] = PATHOLOGIES,
     ):
         super().__init__()
-        self.save_hyperparameters()
+        self.save_hyperparameters(ignore=["pathologies"])
 
         self.num_classes = num_classes
         self.lr = learning_rate
@@ -126,6 +126,9 @@ class RandomClassifier(_CheXpertBase):
             learning_rate=0.0,      # no training needed
             pathologies=pathologies,
         )
+
+        self.automatic_optimization = False
+        
         if class_prior_logits is None:
             # Start from equal probability (logit = 0)
             class_prior_logits = [0.0] * num_classes
@@ -143,7 +146,11 @@ class RandomClassifier(_CheXpertBase):
 
     def configure_optimizers(self):
         # No actual training; return a no-op optimizer
-        return torch.optim.SGD(self._dummy, lr=0.0)
+        return torch.optim.SGD([self._dummy], lr=0.0)
+
+    def training_step(self, batch, batch_idx):
+        loss = self._step(batch, self.train_metrics)
+        self.log("train/loss", loss, on_step=True, on_epoch=True, prog_bar=True)
 
     @classmethod
     def from_label_frequencies(
