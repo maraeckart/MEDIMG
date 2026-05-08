@@ -1,8 +1,10 @@
 
 
 defaults:
-  - chexpert_densenet_uignore           # inherit base experiment
+  - override /data: chexpert
   - override /model: random_baseline
+  - override /trainer: default
+  - override /logger: wandb
   - _self_
 
 tags: ["chexpert", "random_classifier"]
@@ -12,5 +14,6 @@ trainer:
 
 logger:
   wandb:
+    project: "chexpert-medimg"
     name: "random-baseline"
     tags: ${tags}
