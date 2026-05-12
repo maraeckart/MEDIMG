@@ -172,6 +172,7 @@ class CheXpertDataModule(LightningDataModule):
         aug_color_jitter: bool = True,
     ):
         super().__init__()
+        pathologies = list(pathologies)  # convert to list
         self.save_hyperparameters() # for wandb logging
 
         self.data_dir = Path(data_dir)
