@@ -6,12 +6,11 @@ from huggingface_hub import hf_hub_download
 
 from src.models.baselines import _CheXpertBase
 from src.data.chexpert_datamodule import PATHOLOGIES
-from src.models.eva_x import eva_x_small_patch16
+from src.models.eva_x import EVA_X, checkpoint_filter_fn
 
 
 class EVAXModule(_CheXpertBase):
-    """
-    EVA-X Small fine-tuned on CheXpert (U-Ones policy).
+    """EVA-X Small fine-tuned on CheXpert (U-Ones policy).
 
     Backbone pretrained on 520k chest X-rays via masked image modelling.
     """
@@ -35,8 +34,19 @@ class EVAXModule(_CheXpertBase):
             pathologies=pathologies,
         )
 
-
-        self.encoder = eva_x_small_patch16(pretrained=False, num_classes=0)
+        self.encoder = EVA_X(
+            img_size=224,
+            patch_size=16,
+            embed_dim=384,
+            depth=12,
+            num_heads=6,
+            mlp_ratio=4 * 2 / 3,
+            swiglu_mlp=True,
+            use_rot_pos_emb=True,
+            ref_feat_shape=(14, 14),
+            num_classes=0,
+            global_pool="avg",
+        )
 
         if pretrained:
             ckpt_path = hf_hub_download(
@@ -44,14 +54,12 @@ class EVAXModule(_CheXpertBase):
                 filename="eva_x_small_patch16_merged520k_mim.pt",
             )
             state_dict = torch.load(ckpt_path, map_location="cpu", weights_only=False)
-            state_dict = state_dict.get("model", state_dict)
+            state_dict = checkpoint_filter_fn(state_dict, self.encoder)
             self.encoder.load_state_dict(state_dict, strict=False)
-
-        embed_dim = self.encoder.embed_dim  # 384 for small
 
         self.head = nn.Sequential(
             nn.Dropout(p=dropout),
-            nn.Linear(embed_dim, num_classes),
+            nn.Linear(384, num_classes),
         )
 
         if freeze_encoder:
