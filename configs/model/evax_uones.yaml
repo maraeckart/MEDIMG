@@ -1,7 +1,7 @@
 _target_: src.models.evax_module.EVAXModule
 
 pretrained: true
-freeze_encoder: false
+freeze_encoder: true
 dropout: 0.0
 num_classes: 14
 learning_rate: 1e-4
