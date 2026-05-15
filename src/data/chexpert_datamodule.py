@@ -62,6 +62,7 @@ class CheXpertDataset(Dataset):
         transform: Optional[Callable] = None,
         uncertainty_policy: UncertaintyPolicy = "u_ignore",
         pathologies: list[str] = PATHOLOGIES,
+        frontal_only: bool = True
     ):
         self.data_root = Path(data_root)
         self.transform = transform
@@ -69,8 +70,13 @@ class CheXpertDataset(Dataset):
         self.pathologies = pathologies
 
         df = pd.read_csv(csv_path)
+
         # Normalise column names (strip whitespace)
         df.columns = df.columns.str.strip()
+
+        # filter for frontal view
+        if frontal_only:
+            df = df[df["Frontal/Lateral"] == "Frontal"]
 
         # store Image paths 
         self.image_paths: list[Path] = [self.data_root / p for p in df["Path"]]
@@ -83,6 +89,7 @@ class CheXpertDataset(Dataset):
         #   -1  → uncertain mention (u-label)
         #   -2  → not mentioned (NaN)
         label_df = label_df.fillna(-2)
+
 
         # Apply uncertainty policy to -1 entries
         if uncertainty_policy == "u_ones":
@@ -165,6 +172,7 @@ class CheXpertDataModule(LightningDataModule):
         pin_memory: bool = True,
         use_weighted_sampler: bool = False,
         pathologies: list[str] = PATHOLOGIES,
+        frontal_only: bool = True,
 
         # Ablation flags — set to False to isolate the effect of each augmentation
         aug_horizontal_flip: bool = True,
@@ -184,6 +192,7 @@ class CheXpertDataModule(LightningDataModule):
         self.pin_memory = pin_memory
         self.use_weighted_sampler = use_weighted_sampler
         self.pathologies = pathologies
+        self.frontal_only = frontal_only
         self.aug_horizontal_flip = aug_horizontal_flip
         self.aug_rotation = aug_rotation
         self.aug_color_jitter = aug_color_jitter
@@ -262,6 +271,7 @@ class CheXpertDataModule(LightningDataModule):
                 transform=self._train_transforms(),
                 uncertainty_policy=self.uncertainty_policy,
                 pathologies=self.pathologies,
+                frontal_only=self.frontal_only
             )
             self.val_dataset = CheXpertDataset(
                 csv_path=_tmp / "val_split.csv",
@@ -269,6 +279,7 @@ class CheXpertDataModule(LightningDataModule):
                 transform=self._val_transforms(),
                 uncertainty_policy=self.uncertainty_policy,
                 pathologies=self.pathologies,
+                frontal_only=self.frontal_only
             )
 
         if stage in ("test", None):
@@ -279,6 +290,7 @@ class CheXpertDataModule(LightningDataModule):
                 transform=self._val_transforms(),
                 uncertainty_policy="u_ones",  # always use hard labels for test
                 pathologies=self.pathologies,
+                frontal_only=self.frontal_only
             )
 
     # DataLoaders 
