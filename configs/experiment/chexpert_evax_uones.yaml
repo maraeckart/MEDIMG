@@ -1,6 +1,6 @@
 # @package _global_
 
-# Full experiment: EVA-X Small + U-Ones on CheXpert
+# Full experiment: EVA-X + U-Ones on CheXpert
 # Run with:
 #   python src/train.py experiment=chexpert_evax_uones
 
@@ -16,7 +16,7 @@ tags: ["chexpert", "evax_small", "u_ones"]
 seed: 42
 
 trainer:
-  max_epochs: 30
+  max_epochs: 50
   accelerator: gpu
   devices: 1
   precision: 16-mixed
