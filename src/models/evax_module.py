@@ -37,23 +37,21 @@ class EVAXModule(_CheXpertBase):
         self.encoder = EVA_X(
             img_size=224,
             patch_size=16,
-            embed_dim=768,
+            embed_dim=384,
             depth=12,
-            num_heads=12,
+            num_heads=6,
             mlp_ratio=4 * 2 / 3,
             swiglu_mlp=True,
             use_rot_pos_emb=True,
             ref_feat_shape=(14, 14),
             num_classes=0,
             global_pool="avg",
-            qkv_fused=False,
-            scale_mlp=True
         )
 
         if pretrained:
             ckpt_path = hf_hub_download(
                 repo_id="MapleF/eva_x",
-                filename="eva_x_base_patch16_merged520k_mim.pt",
+                filename="eva_x_small_patch16_merged520k_mim.pt",
             )
             state_dict = torch.load(ckpt_path, map_location="cpu", weights_only=False)
             state_dict = checkpoint_filter_fn(state_dict, self.encoder)
@@ -61,7 +59,7 @@ class EVAXModule(_CheXpertBase):
 
         self.head = nn.Sequential(
             nn.Dropout(p=dropout),
-            nn.Linear(768, num_classes),
+            nn.Linear(384, num_classes),
         )
 
         if freeze_encoder:
