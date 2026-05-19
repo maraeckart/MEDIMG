@@ -1,0 +1,24 @@
+program: src/train.py
+method: bayes
+metric:
+  name: val/auroc_macro
+  goal: maximize
+
+parameters:
+  model.learning_rate:
+    distribution: log_uniform_values
+    min: 1e-5
+    max: 1e-3
+  model.weight_decay:
+    values: [0.01, 0.05, 0.1]
+  data.batch_size:
+    values: [32, 64]
+
+command:
+  - ${env}
+  - python
+  - ${program}
+  - experiment=chexpert_evax_uones
+  - trainer.max_epochs=20
+  - callbacks.early_stopping.patience=5
+  - ${args_no_hyphens}
