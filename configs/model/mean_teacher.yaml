@@ -1,0 +1,13 @@
+_target_: src.models.mean_teacher_module.MeanTeacherModule
+
+pretrained: true
+freeze_encoder: false
+dropout: 0.0
+
+num_classes: 14
+learning_rate: 1e-4
+weight_decay: 1e-5
+uncertainty_policy: u_ignore
+
+ema_decay: 0.999
+consistency_weight: 1.0

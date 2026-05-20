@@ -79,7 +79,19 @@ class CheXpertDataset(Dataset):
             df = df[df["Frontal/Lateral"] == "Frontal"]
 
         # store Image paths 
-        self.image_paths: list[Path] = [self.data_root / p for p in df["Path"]]
+        # store image paths
+        self.image_paths: list[Path] = []
+
+        for raw_path in df["Path"]:
+            path = Path(raw_path)
+
+            # Default case: join data root with CSV path
+            candidate = self.data_root / path
+
+            if not candidate.exists() and path.parts[0] == "CheXpert-v1.0-small":
+                candidate = self.data_root / Path(*path.parts[1:])
+
+            self.image_paths.append(candidate)
 
         # Labels 
         label_df = df[self.pathologies].copy()
@@ -163,7 +175,7 @@ class CheXpertDataModule(LightningDataModule):
 
     def __init__(
         self,
-        data_dir: str = "data/CheXpert-v1.0-small",
+        data_dir: str = "data",
         uncertainty_policy: UncertaintyPolicy = "u_ignore",
         val_fraction: float = 0.1,
         image_size: int = 224,
@@ -178,6 +190,7 @@ class CheXpertDataModule(LightningDataModule):
         aug_horizontal_flip: bool = True,
         aug_rotation: bool = True,
         aug_color_jitter: bool = True,
+        aug_gaussian_blur: bool = False
     ):
         super().__init__()
         pathologies = list(pathologies)  # convert to list
@@ -196,6 +209,8 @@ class CheXpertDataModule(LightningDataModule):
         self.aug_horizontal_flip = aug_horizontal_flip
         self.aug_rotation = aug_rotation
         self.aug_color_jitter = aug_color_jitter
+        self.aug_gaussian_blur = aug_gaussian_blur
+        
 
         self.train_dataset = None
         self.val_dataset = None
@@ -213,6 +228,8 @@ class CheXpertDataModule(LightningDataModule):
             pipeline.append(transforms.RandomRotation(10))
         if self.aug_color_jitter:
             pipeline.append(transforms.ColorJitter(brightness=0.2, contrast=0.2))
+        if self.aug_gaussian_blur:
+            pipeline.append(transforms.RandomApply([transforms.GaussianBlur(kernel_size=3,sigma=(0.1, 1.0),)],p=0.3,))
  
         # Always applied after augmentations:
         pipeline += [

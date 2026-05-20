@@ -1,0 +1,19 @@
+_target_: src.data.chexpert_ssl_datamodule.CheXpertSSLDataModule
+
+data_dir: ${paths.root_dir}/data
+uncertainty_policy: u_ignore
+val_fraction: 0.1
+labeled_fraction: 0.2
+
+image_size: 224
+batch_size_labeled: 16
+batch_size_unlabeled: 16
+num_workers: 4
+pin_memory: true
+
+frontal_only: true
+
+aug_horizontal_flip: true
+aug_rotation: true
+aug_color_jitter: true
+aug_gaussian_blur: false
