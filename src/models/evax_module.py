@@ -84,9 +84,18 @@ class EVAXModule(_CheXpertBase):
             {"params": head_params,     "lr": self.lr},
         ], weight_decay=self.weight_decay)
 
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-            optimizer, T_max=self.trainer.max_epochs, eta_min=1e-7
+        
+        warmup = torch.optim.lr_scheduler.LinearLR(
+            optimizer, start_factor=0.1, end_factor=1.0, total_iters=5
         )
+        cosine = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer, T_max=self.trainer.max_epochs - 5, eta_min=1e-7
+        )
+        scheduler = torch.optim.lr_scheduler.SequentialLR(
+            optimizer, schedulers=[warmup, cosine], milestones=[5]
+        )
+
+        
         return {
             "optimizer": optimizer,
             "lr_scheduler": {
