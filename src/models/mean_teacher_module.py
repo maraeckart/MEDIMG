@@ -90,38 +90,72 @@ class MeanTeacherModule(_CheXpertBase):
         return self.teacher(x)
 
     def training_step(self, batch: dict, batch_idx: int) -> torch.Tensor:
-        images = batch["image"]
-        targets = batch["label"]
-        mask = batch["mask"]
+        # 1. Unpack the two individual streams passed from CheXpertSSLDataModule
+        labeled_batch = batch["labeled"]
+        unlabeled_batch = batch["unlabeled"]
 
-        # Student prediction: trained by gradients.
-        student_logits = self.student(images)
+        # 2. Extract components for the Supervised Loss (from labeled data)
+        lbl_images = labeled_batch["image"]
+        targets = labeled_batch["label"]
+        mask = labeled_batch["mask"]
 
-        # Teacher prediction: no gradients, EMA weights.
-        self.teacher.eval()
-        with torch.no_grad():
-            teacher_logits = self.teacher(images)
+        # 3. Extract components for the Unsupervised Consistency Loss
+        unlbl_images = unlabeled_batch["image"]
 
+        # 4. Supervised Forward Pass (Student only evaluates labeled images)
+        student_labeled_logits = self.student(lbl_images)
         supervised_loss = self._masked_loss(
-            logits=student_logits,
+            logits=student_labeled_logits,
             targets=targets,
             mask=mask,
         )
 
+        # 5. Unsupervised Forward Pass (Both pass the unlabeled images)
+        student_unlabeled_logits = self.student(unlbl_images)
+        
+        self.teacher.eval()
+        with torch.no_grad():
+            teacher_unlabeled_logits = self.teacher(unlbl_images)
+
+        # 6. Compute Consistency Regularization (on unlabeled data predictions)
         consistency_loss = F.mse_loss(
-            torch.sigmoid(student_logits),
-            torch.sigmoid(teacher_logits),
+            torch.sigmoid(student_unlabeled_logits),
+            torch.sigmoid(teacher_unlabeled_logits),
         )
 
+        # 7. Total Loss Calculation
         loss = supervised_loss + self.consistency_weight * consistency_loss
 
-        # Update train metrics with student predictions.
-        self.train_metrics.update(student_logits.detach(), targets, mask)
+        # Update train metrics with student supervised predictions
+        self.train_metrics.update(student_labeled_logits.detach(), targets, mask)
 
+        # Logging
         self.log("train/loss", loss, on_step=True, on_epoch=True, prog_bar=True)
         self.log("train/supervised_loss", supervised_loss, on_step=False, on_epoch=True)
         self.log("train/consistency_loss", consistency_loss, on_step=False, on_epoch=True)
 
+        return loss
+    
+    def validation_step(self, batch: dict, batch_idx: int) -> torch.Tensor:
+        # 1. Extract elements from the validation batch dictionary
+        images = batch["image"]
+        targets = batch["label"]
+        mask = batch["mask"]
+
+        # 2. Forward pass through the EMA teacher (handled by your forward method)
+        logits = self.forward(images)
+
+        # 3. Calculate paper-accurate U-Ignore loss using the sample mask
+        loss = self._masked_loss(logits=logits, targets=targets, mask=mask)
+
+        # 4. Update validation metrics while strictly honoring the U-Ignore policy.
+        # This tells TorchMetrics to mask out the -1 and -2 sentinels, 
+        # avoiding denominator collapse and realistic tracking.
+        self.val_metrics.update(logits, targets, mask)
+
+        # 5. Log the corrected validation loss
+        self.log("val/loss", loss, on_step=False, on_epoch=True, prog_bar=True)
+        
         return loss
 
     @torch.no_grad()

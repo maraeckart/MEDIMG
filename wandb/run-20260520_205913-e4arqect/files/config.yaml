@@ -1,0 +1,233 @@
+_wandb:
+    value:
+        cli_version: 0.27.0
+        e:
+            rztzx77ennohwai5bj4czxm0lt1fjz1m:
+                apple:
+                    ecpuCores: 6
+                    gpuCores: 10
+                    macModel: Mac17,2
+                    memoryGb: 24
+                    name: Apple M5
+                    pcpuCores: 4
+                    ramTotalBytes: "25769803776"
+                    swapTotalBytes: "11811160064"
+                args:
+                    - data=chexpert_ssl
+                    - model=mean_teacher
+                    - logger=wandb
+                    - logger.wandb.entity=nadine-flueck-hochschule-luzern
+                    - logger.wandb.project=MEDIMG-src
+                    - trainer.max_epochs=1
+                    - data.batch_size_labeled=16
+                    - data.batch_size_unlabeled=16
+                    - data.num_workers=0
+                codePath: src/train.py
+                codePathLocal: src/train.py
+                cpu_count: 10
+                cpu_count_logical: 10
+                disk:
+                    /:
+                        total: "494332366848"
+                        used: "253159358464"
+                email: mara.eckart@stud.hslu.ch
+                executable: /Users/maraeckart/dev/hslu/fs26/MEDIMG/.venv/bin/python
+                git:
+                    commit: bf946849bcd9f7a9b92a4a58bb1dd0d8d8144748
+                    remote: https://github.com/maraeckart/MEDIMG.git
+                host: MacBook-Pro-von-Mara.local
+                memory:
+                    total: "25769803776"
+                os: macOS-26.3-arm64-arm-64bit
+                program: /Users/maraeckart/dev/hslu/fs26/MEDIMG/src/train.py
+                python: CPython 3.10.20
+                root: .
+                startedAt: "2026-05-20T18:59:13.072990Z"
+                writerId: rztzx77ennohwai5bj4czxm0lt1fjz1m
+        m:
+            - "1": trainer/global_step
+              "6":
+                - 3
+              "7": []
+            - "2": '*'
+              "5": 1
+              "6":
+                - 1
+              "7": []
+        python_version: 3.10.20
+        t:
+            "1":
+                - 1
+                - 41
+                - 50
+                - 106
+            "2":
+                - 1
+                - 41
+                - 50
+                - 106
+            "3":
+                - 2
+                - 7
+                - 66
+            "4": 3.10.20
+            "5": 0.27.0
+            "12": 0.27.0
+            "13": darwin-arm64
+aug_color_jitter:
+    value: true
+aug_gaussian_blur:
+    value: false
+aug_horizontal_flip:
+    value: true
+aug_rotation:
+    value: true
+batch_size:
+    value: 32
+batch_size_labeled:
+    value: 16
+batch_size_unlabeled:
+    value: 16
+callbacks:
+    value:
+        early_stopping:
+            _target_: lightning.pytorch.callbacks.EarlyStopping
+            check_finite: true
+            check_on_train_epoch_end: null
+            divergence_threshold: null
+            min_delta: 0
+            mode: max
+            monitor: val/acc
+            patience: 100
+            stopping_threshold: null
+            strict: true
+            verbose: false
+        model_checkpoint:
+            _target_: lightning.pytorch.callbacks.ModelCheckpoint
+            auto_insert_metric_name: false
+            dirpath: ${paths.output_dir}/checkpoints
+            every_n_epochs: null
+            every_n_train_steps: null
+            filename: epoch_{epoch:03d}
+            mode: max
+            monitor: val/acc
+            save_last: true
+            save_on_train_epoch_end: null
+            save_top_k: 1
+            save_weights_only: false
+            train_time_interval: null
+            verbose: false
+        model_summary:
+            _target_: lightning.pytorch.callbacks.RichModelSummary
+            max_depth: -1
+        rich_progress_bar:
+            _target_: lightning.pytorch.callbacks.RichProgressBar
+ckpt_path:
+    value: null
+consistency_weight:
+    value: 1
+data:
+    value:
+        _target_: src.data.chexpert_ssl_datamodule.CheXpertSSLDataModule
+        aug_color_jitter: true
+        aug_gaussian_blur: false
+        aug_horizontal_flip: true
+        aug_rotation: true
+        batch_size_labeled: 16
+        batch_size_unlabeled: 16
+        data_dir: ${paths.root_dir}/data
+        frontal_only: true
+        image_size: 224
+        labeled_fraction: 0.2
+        num_workers: 0
+        pin_memory: true
+        uncertainty_policy: u_ignore
+        val_fraction: 0.1
+data_dir:
+    value: /Users/maraeckart/dev/hslu/fs26/MEDIMG/data
+dropout:
+    value: 0
+ema_decay:
+    value: 0.999
+extras:
+    value:
+        enforce_tags: true
+        ignore_warnings: false
+        print_config: true
+freeze_encoder:
+    value: false
+frontal_only:
+    value: true
+image_size:
+    value: 224
+labeled_fraction:
+    value: 0.2
+learning_rate:
+    value: 0.0001
+model:
+    value:
+        _target_: src.models.mean_teacher_module.MeanTeacherModule
+        consistency_weight: 1
+        dropout: 0
+        ema_decay: 0.999
+        freeze_encoder: false
+        learning_rate: 0.0001
+        num_classes: 14
+        pretrained: true
+        uncertainty_policy: u_ignore
+        weight_decay: 1e-05
+model/params/non_trainable:
+    value: 6968206
+model/params/total:
+    value: 13936412
+model/params/trainable:
+    value: 6968206
+num_classes:
+    value: 14
+num_workers:
+    value: 0
+pathologies:
+    value:
+        - No Finding
+        - Enlarged Cardiomediastinum
+        - Cardiomegaly
+        - Lung Opacity
+        - Lung Lesion
+        - Edema
+        - Consolidation
+        - Pneumonia
+        - Atelectasis
+        - Pneumothorax
+        - Pleural Effusion
+        - Pleural Other
+        - Fracture
+        - Support Devices
+pin_memory:
+    value: true
+pretrained:
+    value: true
+seed:
+    value: 42
+tags:
+    value:
+        - dev
+task_name:
+    value: train
+trainer:
+    value:
+        _target_: lightning.pytorch.trainer.Trainer
+        accelerator: cpu
+        check_val_every_n_epoch: 1
+        default_root_dir: ${paths.output_dir}
+        deterministic: false
+        devices: 1
+        max_epochs: 1
+        min_epochs: 1
+uncertainty_policy:
+    value: u_ignore
+use_weighted_sampler:
+    value: false
+val_fraction:
+    value: 0.1
+weight_decay:
+    value: 1e-05
