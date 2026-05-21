@@ -18,6 +18,8 @@ from torchvision.models import densenet121, DenseNet121_Weights
 from src.utils.metrics import CheXpertMetrics
 from src.data.chexpert_datamodule import PATHOLOGIES
 
+import csv
+from pathlib import Path
 
 # Shared LightningModule base
 
@@ -52,6 +54,10 @@ class _CheXpertBase(LightningModule):
         # applies sigmoid internally, computes binary cross-entropy for each of the 14 classes independently
         # Reduction=none so we can apply the uncertainty mask per-element
         self.criterion = nn.BCEWithLogitsLoss(reduction="none")
+
+        self.pathologies = pathologies
+        self._test_records: list = []
+
 
     # Loss with optional mask
     def _masked_loss(
@@ -99,11 +105,57 @@ class _CheXpertBase(LightningModule):
         self.val_metrics.reset()
 
     def test_step(self, batch, batch_idx):
-        self._step(batch, self.test_metrics)
+        images = batch["image"]
+        targets = batch["label"]
+        mask = batch["mask"]
+        paths = batch["path"]
+        
+        logits = self(images)
+        
+        loss = self._masked_loss(logits, targets, mask)
+        self.log("test/loss", loss, on_epoch=True)
+
+        self.test_metrics.update(logits.detach(), targets, mask)        
+        
+        probs = torch.sigmoid(logits).detach().cpu()
+        for i in range(len(paths)):
+            self._test_records.append({
+                "path":    paths[i],
+                "probs":   probs[i].tolist(),
+                "targets": targets[i].cpu().tolist(),
+                "mask":    mask[i].cpu().tolist(),
+            })
 
     def on_test_epoch_end(self):
+
         self.log_dict(self.test_metrics.compute())
         self.test_metrics.reset()
+
+        out_path = Path("outputs/misclassified.csv")
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+
+        fieldnames = ["img_path"] + [
+            col
+            for name in self.pathologies
+            for col in (f"{name}_true", f"{name}_prob", f"{name}_wrong")
+        ]
+
+        with open(out_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for rec in self._test_records:
+                row = {"img_path": rec["path"]}
+                for j, name in enumerate(self.pathologies):
+                    true_val = rec["targets"][j]
+                    prob     = rec["probs"][j]
+                    valid    = bool(rec["mask"][j])
+                    row[f"{name}_true"] = int(true_val) if valid else ""
+                    row[f"{name}_prob"] = f"{prob:.4f}"
+                    row[f"{name}_wrong"] = int((prob > 0.5) != bool(true_val)) if valid else ""
+                writer.writerow(row)
+
+        self._test_records.clear()
+
 
 # Baseline 1 – Random Classifier
 

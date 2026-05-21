@@ -136,7 +136,7 @@ class CheXpertDataset(Dataset):
         # since loss contribution is multiplied by 0.
         label = label.clamp(min=0)  
 
-        return {"image": image, "label": label, "mask": mask, "idx": idx}
+        return {"image": image, "label": label, "mask": mask, "idx": idx, "path": str(img_path)}
 
 
 
