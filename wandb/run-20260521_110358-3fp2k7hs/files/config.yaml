@@ -1,0 +1,228 @@
+_wandb:
+    value:
+        cli_version: 0.27.0
+        e:
+            ovg16vrup0qmfpwh7nhvly4ab4ugfxvf:
+                args:
+                    - data=chexpert_ssl
+                    - model=mean_teacher
+                    - trainer.max_epochs=1
+                    - +trainer.limit_train_batches=2
+                    - +trainer.limit_val_batches=2
+                    - data.batch_size_labeled=4
+                    - data.batch_size_unlabeled=4
+                    - data.num_workers=0
+                    - trainer.accelerator=cpu
+                    - callbacks.early_stopping.strict=False
+                    - logger=wandb
+                codePath: src/train.py
+                codePathLocal: src/train.py
+                cpu_count: 56
+                cpu_count_logical: 112
+                disk:
+                    /:
+                        total: "263624122368"
+                        used: "194818863104"
+                email: mara.eckart@stud.hslu.ch
+                executable: /home/jovyan/MEDIMG/.venv/bin/python
+                git:
+                    commit: 8905b67e4b8a28bf22eec080d94ba64f0d44b985
+                    remote: https://github.com/maraeckart/MEDIMG.git
+                host: jupyter-mara-eckart---a865cbc1
+                memory:
+                    total: "811120480256"
+                os: Linux-6.8.0-100-generic-x86_64-with-glibc2.39
+                program: /home/jovyan/MEDIMG/src/train.py
+                python: CPython 3.13.13
+                root: .
+                startedAt: "2026-05-21T11:03:58.404374Z"
+                writerId: ovg16vrup0qmfpwh7nhvly4ab4ugfxvf
+        m:
+            - "1": trainer/global_step
+              "6":
+                - 3
+              "7": []
+            - "2": '*'
+              "5": 1
+              "6":
+                - 1
+              "7": []
+        python_version: 3.13.13
+        t:
+            "1":
+                - 1
+                - 41
+                - 50
+                - 106
+            "2":
+                - 1
+                - 41
+                - 50
+                - 106
+            "3":
+                - 2
+                - 7
+                - 66
+            "4": 3.13.13
+            "5": 0.27.0
+            "12": 0.27.0
+            "13": linux-x86_64
+aug_color_jitter:
+    value: true
+aug_gaussian_blur:
+    value: false
+aug_horizontal_flip:
+    value: true
+aug_rotation:
+    value: true
+batch_size:
+    value: 8
+batch_size_labeled:
+    value: 4
+batch_size_unlabeled:
+    value: 4
+callbacks:
+    value:
+        early_stopping:
+            _target_: lightning.pytorch.callbacks.EarlyStopping
+            check_finite: true
+            check_on_train_epoch_end: null
+            divergence_threshold: null
+            min_delta: 0
+            mode: max
+            monitor: val/auroc_macro
+            patience: 3
+            stopping_threshold: null
+            strict: false
+            verbose: false
+        model_checkpoint:
+            _target_: lightning.pytorch.callbacks.ModelCheckpoint
+            auto_insert_metric_name: false
+            dirpath: ${paths.output_dir}/checkpoints
+            every_n_epochs: null
+            every_n_train_steps: null
+            filename: epoch_{epoch:03d}
+            mode: max
+            monitor: val/auroc_macro
+            save_last: true
+            save_on_train_epoch_end: null
+            save_top_k: 1
+            save_weights_only: false
+            train_time_interval: null
+            verbose: false
+        model_summary:
+            _target_: lightning.pytorch.callbacks.RichModelSummary
+            max_depth: -1
+        rich_progress_bar:
+            _target_: lightning.pytorch.callbacks.RichProgressBar
+ckpt_path:
+    value: null
+consistency_weight:
+    value: 1
+data:
+    value:
+        _target_: src.data.chexpert_ssl_datamodule.CheXpertSSLDataModule
+        aug_color_jitter: true
+        aug_gaussian_blur: false
+        aug_horizontal_flip: true
+        aug_rotation: true
+        batch_size_labeled: 4
+        batch_size_unlabeled: 4
+        data_dir: ${paths.root_dir}/data
+        frontal_only: true
+        image_size: 224
+        labeled_fraction: 0.2
+        num_workers: 0
+        pin_memory: true
+        uncertainty_policy: u_ignore
+        val_fraction: 0.1
+data_dir:
+    value: /home/jovyan/MEDIMG/data
+dropout:
+    value: 0
+ema_decay:
+    value: 0.999
+extras:
+    value:
+        enforce_tags: true
+        ignore_warnings: false
+        print_config: true
+freeze_encoder:
+    value: false
+frontal_only:
+    value: true
+image_size:
+    value: 224
+labeled_fraction:
+    value: 0.2
+learning_rate:
+    value: 0.0001
+model:
+    value:
+        _target_: src.models.mean_teacher_module.MeanTeacherModule
+        consistency_weight: 1
+        dropout: 0
+        ema_decay: 0.999
+        freeze_encoder: false
+        learning_rate: 0.0001
+        num_classes: 14
+        pretrained: true
+        uncertainty_policy: u_ignore
+        weight_decay: 1e-05
+model/params/non_trainable:
+    value: 6968206
+model/params/total:
+    value: 13936412
+model/params/trainable:
+    value: 6968206
+num_classes:
+    value: 14
+num_workers:
+    value: 0
+pathologies:
+    value:
+        - No Finding
+        - Enlarged Cardiomediastinum
+        - Cardiomegaly
+        - Lung Opacity
+        - Lung Lesion
+        - Edema
+        - Consolidation
+        - Pneumonia
+        - Atelectasis
+        - Pneumothorax
+        - Pleural Effusion
+        - Pleural Other
+        - Fracture
+        - Support Devices
+pin_memory:
+    value: true
+pretrained:
+    value: true
+seed:
+    value: 42
+tags:
+    value:
+        - dev
+task_name:
+    value: train
+trainer:
+    value:
+        _target_: lightning.pytorch.trainer.Trainer
+        accelerator: cpu
+        check_val_every_n_epoch: 1
+        default_root_dir: ${paths.output_dir}
+        deterministic: false
+        devices: 1
+        limit_train_batches: 2
+        limit_val_batches: 2
+        max_epochs: 1
+        min_epochs: 1
+uncertainty_policy:
+    value: u_ignore
+use_weighted_sampler:
+    value: false
+val_fraction:
+    value: 0.1
+weight_decay:
+    value: 1e-05

@@ -1,0 +1,51 @@
+{
+  "os": "Linux-5.15.0-170-generic-x86_64-with-glibc2.39",
+  "python": "CPython 3.13.12",
+  "startedAt": "2026-05-21T12:06:36.072220Z",
+  "args": [
+    "data=chexpert_ssl",
+    "model=mean_teacher",
+    "trainer.max_epochs=10",
+    "data.batch_size_labeled=32",
+    "data.batch_size_unlabeled=32",
+    "data.num_workers=4",
+    "trainer.accelerator=gpu",
+    "trainer.devices=1",
+    "logger=wandb"
+  ],
+  "program": "/home/jovyan/MEDIMG/src/train.py",
+  "codePath": "src/train.py",
+  "codePathLocal": "src/train.py",
+  "git": {
+    "remote": "https://github.com/maraeckart/MEDIMG.git",
+    "commit": "8905b67e4b8a28bf22eec080d94ba64f0d44b985"
+  },
+  "email": "mara.eckart@stud.hslu.ch",
+  "root": ".",
+  "host": "jupyter-mara-eckart---a865cbc1",
+  "executable": "/home/jovyan/MEDIMG/.venv/bin/python",
+  "cpu_count": 128,
+  "cpu_count_logical": 128,
+  "gpu": "NVIDIA A16",
+  "gpu_count": 1,
+  "disk": {
+    "/": {
+      "total": "295326842880",
+      "used": "191464185856"
+    }
+  },
+  "memory": {
+    "total": "540862451712"
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA A16",
+      "memoryTotal": "16101933056",
+      "cudaCores": 1280,
+      "architecture": "Ampere",
+      "uuid": "GPU-e48032e3-cfb2-491d-1e2a-1ef92b0e47f7"
+    }
+  ],
+  "cudaVersion": "12.2",
+  "writerId": "hsv2tgvev8j3iaa05a3u25mcu7a9oay1"
+}

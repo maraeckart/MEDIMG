@@ -2,7 +2,7 @@
 
 _target_: src.data.chexpert_datamodule.CheXpertDataModule
 
-data_dir: ${paths.data_dir}
+data_dir: ${paths.root_dir}/data
 
 # Uncertainty policy: u_ignore | u_ones | u_zeros
 uncertainty_policy: u_ignore
@@ -24,6 +24,7 @@ use_weighted_sampler: false
 aug_horizontal_flip: true
 aug_rotation: true
 aug_color_jitter: true
+aug_gaussian_blur: false
 
 # Use all 14 pathologies by default
 pathologies:

@@ -1,0 +1,49 @@
+{
+  "os": "macOS-26.3-arm64-arm-64bit",
+  "python": "CPython 3.10.20",
+  "startedAt": "2026-05-20T18:59:13.072990Z",
+  "args": [
+    "data=chexpert_ssl",
+    "model=mean_teacher",
+    "logger=wandb",
+    "logger.wandb.entity=nadine-flueck-hochschule-luzern",
+    "logger.wandb.project=MEDIMG-src",
+    "trainer.max_epochs=1",
+    "data.batch_size_labeled=16",
+    "data.batch_size_unlabeled=16",
+    "data.num_workers=0"
+  ],
+  "program": "/Users/maraeckart/dev/hslu/fs26/MEDIMG/src/train.py",
+  "codePath": "src/train.py",
+  "codePathLocal": "src/train.py",
+  "git": {
+    "remote": "https://github.com/maraeckart/MEDIMG.git",
+    "commit": "bf946849bcd9f7a9b92a4a58bb1dd0d8d8144748"
+  },
+  "email": "mara.eckart@stud.hslu.ch",
+  "root": ".",
+  "host": "MacBook-Pro-von-Mara.local",
+  "executable": "/Users/maraeckart/dev/hslu/fs26/MEDIMG/.venv/bin/python",
+  "cpu_count": 10,
+  "cpu_count_logical": 10,
+  "disk": {
+    "/": {
+      "total": "494332366848",
+      "used": "253159358464"
+    }
+  },
+  "memory": {
+    "total": "25769803776"
+  },
+  "apple": {
+    "name": "Apple M5",
+    "ecpuCores": 6,
+    "pcpuCores": 4,
+    "gpuCores": 10,
+    "memoryGb": 24,
+    "swapTotalBytes": "11811160064",
+    "ramTotalBytes": "25769803776",
+    "macModel": "Mac17,2"
+  },
+  "writerId": "rztzx77ennohwai5bj4czxm0lt1fjz1m"
+}
