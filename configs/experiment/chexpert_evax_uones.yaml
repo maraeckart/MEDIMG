@@ -11,7 +11,7 @@ defaults:
   - override /logger: wandb
   - _self_
 
-tags: ["chexpert", "evax_small", "u_ones"]
+tags: ["chexpert", "evax_base", "u_ones"]
 
 seed: 42
 
@@ -44,5 +44,5 @@ callbacks:
 logger:
   wandb:
     project: "chexpert-medimg"
-    name: "evax-small-u_ones"
+    name: "evax-base-u_ones"
     tags: ${tags}
