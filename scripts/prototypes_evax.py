@@ -94,11 +94,19 @@ def main():
             continue
 
         explainer = PrototypeExplainer(n_prototypes=args.n_prototypes)
+
+        max_samples_per_class = 5000
+        idx = np.where(valid)[0]
+        if len(idx) > max_samples_per_class:
+            rng = np.random.default_rng(42)
+            idx = rng.choice(idx, size=max_samples_per_class, replace=False)
+
         explainer.fit(
-            train_features[valid],
-            train_labels[valid, j].astype(int),
-            [train_images[i] for i in np.where(valid)[0]],
+            train_features[idx],
+            train_labels[idx, j].astype(int),
+            [train_images[i] for i in idx],
         )
+        
 
         wrong_rows = df_wrong[df_wrong[wrong_col] == 1]
         if len(wrong_rows) == 0:
