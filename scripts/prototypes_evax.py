@@ -25,19 +25,19 @@ def _unnormalize(tensor):
 
 
 def extract_features(model, dataloader, device):
-    all_features, all_labels, all_masks, all_images = [], [], [], []
+    all_features, all_labels, all_masks, all_paths = [], [], [], []
     with torch.no_grad():
         for batch in dataloader:
             feats = model.encoder(batch["image"].to(device)).cpu().numpy()
             all_features.append(feats)
             all_labels.append(batch["label"].numpy())
             all_masks.append(batch["mask"].numpy())
-            all_images.extend(_unnormalize(batch["image"]))
+            all_paths.extend(batch["path"])
     return (
         np.concatenate(all_features),
         np.concatenate(all_labels),
         np.concatenate(all_masks),
-        all_images,
+        all_paths,
     )
 
 
@@ -101,12 +101,20 @@ def main():
             rng = np.random.default_rng(42)
             idx = rng.choice(idx, size=max_samples_per_class, replace=False)
 
+        idx = np.where(valid)[0]
+        if len(idx) > 5000:
+            idx = np.random.default_rng(42).choice(idx, size=5000, replace=False)
+
+        proto_images = []
+        for i in idx:
+            img = Image.open(train_paths[i]).convert("RGB")
+            proto_images.append(np.array(img.resize((224, 224))) / 255.0)
+
         explainer.fit(
             train_features[idx],
             train_labels[idx, j].astype(int),
-            [train_images[i] for i in idx],
+            proto_images,
         )
-        
 
         wrong_rows = df_wrong[df_wrong[wrong_col] == 1]
         if len(wrong_rows) == 0:
