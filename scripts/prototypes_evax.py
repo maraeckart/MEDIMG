@@ -17,17 +17,12 @@ from src.data.chexpert_datamodule import CheXpertDataModule, PATHOLOGIES
 from src.utils.prototypes import PrototypeExplainer, MisclassificationAnalyzer
 
 
-def _unnormalize(tensor):
-    mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
-    std  = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
-    imgs = (tensor * std + mean).clamp(0, 1).permute(0, 2, 3, 1).numpy()
-    return [imgs[i] for i in range(len(imgs))]
-
-
 def extract_features(model, dataloader, device):
     all_features, all_labels, all_masks, all_paths = [], [], [], []
     with torch.no_grad():
-        for batch in dataloader:
+        for batch_idx, batch in enumerate(dataloader, 1):
+            if batch_idx % 100 == 0:
+                print(f"  batch {batch_idx}/{len(dataloader)}", flush=True)
             feats = model.encoder(batch["image"].to(device)).cpu().numpy()
             all_features.append(feats)
             all_labels.append(batch["label"].numpy())
@@ -69,7 +64,7 @@ def main():
     dm.setup(stage="fit")
 
     print("Extracting training features...")
-    train_features, train_labels, train_masks, train_images = extract_features(
+    train_features, train_labels, train_masks, train_paths = extract_features(
         model, dm.train_dataloader(), device
     )
 
@@ -95,15 +90,18 @@ def main():
 
         explainer = PrototypeExplainer(n_prototypes=args.n_prototypes)
 
-        max_samples_per_class = 5000
-        idx = np.where(valid)[0]
-        if len(idx) > max_samples_per_class:
-            rng = np.random.default_rng(42)
-            idx = rng.choice(idx, size=max_samples_per_class, replace=False)
+        idx_pos = np.where(valid & (train_labels[:, j] == 1))[0]
+        idx_neg = np.where(valid & (train_labels[:, j] == 0))[0]
 
-        idx = np.where(valid)[0]
-        if len(idx) > 5000:
-            idx = np.random.default_rng(42).choice(idx, size=5000, replace=False)
+        rng = np.random.default_rng(42)
+        idx_pos = rng.choice(idx_pos, size=min(2500, len(idx_pos)), replace=False) if len(idx_pos) > 2500 else idx_pos
+        idx_neg = rng.choice(idx_neg, size=min(2500, len(idx_neg)), replace=False) if len(idx_neg) > 2500 else idx_neg
+        idx = np.concatenate([idx_pos, idx_neg])
+
+        if len(idx_pos) == 0 or len(idx_neg) == 0:
+            print(f"{pathology}: skipping — one class has no training samples")
+            continue
+
 
         proto_images = []
         for i in idx:
