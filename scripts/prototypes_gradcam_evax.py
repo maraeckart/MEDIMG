@@ -73,6 +73,10 @@ def main():
     )
     dm.setup(stage="fit")
 
+    from torch.utils.data import Subset
+    indices = np.random.default_rng(42).choice(len(dm.train_dataset), size=20000, replace=False)
+    dm.train_dataset = Subset(dm.train_dataset, indices)
+
     print("Extracting training features...")
     train_features, train_labels, train_masks, train_paths = extract_features(
         model, dm.train_dataloader(), device
