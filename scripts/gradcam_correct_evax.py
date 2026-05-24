@@ -30,6 +30,7 @@ def main():
     parser.add_argument("--misclassified", default="outputs/misclassified.csv")
     parser.add_argument("--output_dir", default="outputs/gradcam_correct")
     parser.add_argument("--n_samples", type=int, default=30)
+    parser.add_argument("--data_dir", default=None)
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -49,6 +50,12 @@ def main():
     ])
 
     df = pd.read_csv(args.misclassified)
+
+    if args.data_dir:
+        df["img_path"] = df["img_path"].str.replace(
+            "/home/jovyan/MEDIMG/data/CheXpert-v1.0-small", args.data_dir, regex=False
+        )
+
 
     for j, pathology in enumerate(PATHOLOGIES):
         wrong_col = f"{pathology}_wrong"
