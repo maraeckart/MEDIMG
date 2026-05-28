@@ -62,14 +62,20 @@ The model predicts the following 14 observations derived from radiology reports 
 pip install -r requirements.txt
 ```
 
+## Data
+The Data needs to be downloaded locally.
+The expected layout is data/train.csv, data/valid.csv, and images under data/CheXpert-v1.0-small/train/
+
 ---
+
+
 
 ## Running the Project
 
 ### Train
 
 ```bash
-python src/train.py
+python src/train.py experiment=chexpert_evax_uones
 ```
 
 Override any config value on the command line via Hydra:
